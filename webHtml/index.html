@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html ng-app="app"><!-- ng-app 指令用于告诉 AngularJS 应用当前这个元素是根元素。只允许有一个。如果有多个只有第一个会被使用。-->
+	<head>
+		<meta charset="utf-8"><!--设置字符集-->
+		<!--设置可视区域-->
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,minimal-ui">
+		<!--telephone=no 一串数字不将其识别成电话号码-->
+		<meta name="format-detection" content="telephone=no">
+		<link rel="stylesheet" href="css/reset.css"><!--重置默认布局-->
+		<style type="text/css">
+		  html{
+				width:100%;
+				height:100%;
+				overflow-x: hidden;/* overflow-x 对元素左右边缘进行裁剪不进行滚动 */
+			}
+		  body {
+				text-align: left;/* text-align 属性规定元素中的文本的水平对齐方式。*/
+				width: 100%;/*元素宽度*/
+				overflow: hidden;/*内容溢出时会被裁剪掉不会滚动*/
+				background:#e9dfc7;/*背景色*/
+			}
+			.m-read-content{/*中间内容DIV样式；*/
+        		font-size:14px;/*字体大小*/
+				color:#555;/*字体颜色*/
+				line-height: 31px;/*字体行高*/
+				padding:15px;/* padding 简写在一个声明中设置所有内边距。4个内边距是15px*/
+			}
+			.m-read-content h4{/*h4元素的样式；*/
+				font-size: 20px;
+				color:#736357;
+				border-bottom: solid 1px #736357; /* 边框底部1px宽 实心边框 颜色为 #736357*/
+				letter-spacing: 2px;/*字间距*/
+				margin: 0 0 1em 0;/*h4元素的底部外边距；h4元素与p元素之间设置一个外边距*/
+			}
+			.m-read-content p{/*p元素的样式；*/
+				text-indent: 2em;/*将段落的第一行缩进2em*/
+				margin: 0.5em 0;/*上下外边距是0.5em,左右外边距是0;段落与段落之间设置一个外边距*/
+				letter-spacing: 0px;
+				line-height: 24px;
+			}
+			.u-tab{/*ul元素样式*/
+				height:34px;
+				margin: 10px auto;
+				line-height: 34px;/*line-height 与 height 设置为一个高度是要让文字能垂直居中*/
+				border-radius: 8px;/*CSS3属性，手机完美支持，边框设置圆角*/
+				border:1px solid #858382;
+				font-size: 12px;
+				background:#000;
+				opacity: 0.9;/* opacity 属性设置元素的不透明级别 */
+			}
+			.u-tab li{/*ul元素下li元素的样式*/
+        		display: inline-block;/* li转换为行内区块元素,li可以在一行内呈现。 */
+				width:49%;/* 不能设置50%，因为有border宽度，若设置50%就不能排列到一行。*/
+				border-right: 1px solid #858382;/*两个按钮间有根边框线。*/
+				text-align: center;/* 元素内部居中。*/
+				color:#fff;/*文字颜色是白色的。*/
+			}
+			/*设置border-right后 第二个按钮也会出现一个细线，这个细线需要去掉，此时用到 伪类选择器;CSS的元素从1开始*/
+			.u-tab li:nth-child(2){/*ul元素下第2个li元素的样式*/
+       			 border-right:none;
+			}
+			.m-button-bar {/*下边栏DIV样式；*/
+				width:70%;
+				max-width: 800px;/*设置最大宽度；*/
+				padding:5px;/*内边距*/
+				margin:0 auto;/*居中，因为0 auto，表示上下边界为0，左右则根据宽度自适应相同值（即居中）；*/
+			}
+			#top_nav{/*设置上边栏样式*/
+				position: fixed;
+				/*fixed总是以body为定位时的对象，总是根据浏览器的窗口来进行元素的定位，通过"left"、 "top"、 "right"、 "bottom" 属性进行定位。*/
+				top:0px;
+				height: 50px;
+				width: 100%;
+				z-index: 10004;/* z-index 属性设置元素的堆叠顺序,z-index的数字越高越靠前;*/
+				background: #000;
+				opacity: 1;
+			}
+			.icon-back{/*返回图标样式*/
+				position: absolute;/*相对于父容器进行绝对定位。*/
+				top:14px;
+				left:18px;
+				width:23px;
+				height:23px;
+				background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkJGMkEyQkQxMjdBNDExRTU4NjA2QTJDMjFDQ0I0ODhEIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkJGMkEyQkQyMjdBNDExRTU4NjA2QTJDMjFDQ0I0ODhEIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QkYyQTJCQ0YyN0E0MTFFNTg2MDZBMkMyMUNDQjQ4OEQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QkYyQTJCRDAyN0E0MTFFNTg2MDZBMkMyMUNDQjQ4OEQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4Ia560AAAHWklEQVR42uyd7W9U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);
+				background-size: contain;/*先设置background,再设置background-size才会生效；把图像图像扩展至最大尺寸，以使其宽度和高度完全适应内容区域。*/
+			}
+			.nav-title{/*返回字体样式*/
+				position:absolute;/*相对于父容器进行绝对定位。*/
+				top:16px;
+				left:42px;
+				color:#d5d5d6;
+			}
+			.bottom-nav-bk {
+				position: fixed;
+				bottom: 0px;
+				height: 70px;
+				background: #000;
+				width: 100%;
+				opacity: 0.9;
+				z-index: 10004
+			}
+
+			.bottom-nav {/*整个下边栏内容div样式*/
+				position: fixed;/*相对于body定位*/
+				bottom: 0px;/*底部边距0*/
+				height: 70px;/*高度70px*/
+				background: #000;
+				width: 100%;
+				opacity: 0.9;/*透明度*/
+				z-index: 10004;/*排列顺序*/
+				text-align: center;/*文字居中*/
+			}
+			.bottom-nav .item {/*每一项的div样式;*/
+				display: inline-block;/*将对象在一行内呈现*/
+				width: 32%;
+				color: #fff;
+				text-align: center;
+				margin: 0 auto;
+			}
+			.item-warp {/* 设置具体项DIV样式*/
+				width: 26px;
+				margin: 0 auto;
+				position: relative;/*相对定位，相对于前面的容器定位；*/
+			}
+			.icon-menu, .icon-ft, .icon-night, .icon-day {/*设置图标的div共同样式；*/
+				position: absolute;
+				top: 3px;
+				left: 2px;
+				width: 18px;
+				height: 13px;
+				background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAAoCAYAAABerrI1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkNFN0E3M0IwMjc4NDExRTU5RkYxQjg1Rjk2QkEyNzBEIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkNFN0E3M0IxMjc4NDExRTU5RkYxQjg1Rjk2QkEyNzBEIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6N0M1ODVCRkYyNzg0MTFFNTlGRjFCODVGOTZCQTI3MEQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6N0M1ODVDMDAyNzg0MTFFNTlGRjFCODVGOTZCQTI3MEQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5uTX6PAAAA0UlEQVR42uyXsQrCMBRFX4p0V39Pv8FJcekHFJe6d+v3NY6CDvUFooQ0AcEllnPhlgz3QU6bBq6ZnvdaRC7qndqoB/VR/ZC5wuxGytLtvXejUJ0uDlGgVZ8Tg6lsaWod1Jh461a9TQyMBX6hWLaSBary5zBWn8kPf8DUr/Rx8hfEPth4kxkIs+tCL4rG/VOLPH5AAQUUUEABBRRQv0O54nf1tcL6dZ3Jh9mpMH/2TkmkJFISKYmURKCAAgoooIACCihKIiWRkkhJpCR+XxJfAgwA/ROhOlYvoWQAAAAASUVORK5CYII=);
+				background-size: contain;
+			}
+			.icon-night, .icon-day, .icon-ft {
+				left: 1px;
+			}
+			.icon-ft {/*字体图标默认icon样式；*/
+				width: 20px;
+				height: 13px;
+				background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEYAAAAuCAYAAACViW+zAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjBCRTkzQUQ3Mjc4NzExRTU5RkYxQjg1Rjk2QkEyNzBEIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjBCRTkzQUQ4Mjc4NzExRTU5RkYxQjg1Rjk2QkEyNzBEIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6Q0U3QTczQkEyNzg0MTFFNTlGRjFCODVGOTZCQTI3MEQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MEJFOTNBRDYyNzg3MTFFNTlGRjFCODVGOTZCQTI3MEQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6/hjRDAAAFqklEQVR42uRaaWwVVRi9fTbYqoBoEGIVrDsBA6JRAY0VSkQUl7pQI8YQGjTRaNCgBtdoApho3aoRRJaIC25/VBTBCiqCuKX+QDFqFANRsRCtsRWr9XzxNBnu++6bO/fNe9i+k5y0c2fmzrwz3/22mbKuv9pNChgCLgLHgBvABnCr6Qkor1CHy1ISZjVYG9leC55V6sLsB/4ucynj7T1VmEwKU09VRBHUmx6MNIS5JuF4SQhzIniKY5+MjypVYa4OtKb/PfJxvn3B7eABOY4Rp3wo2FZKzndajCiG+68otaWkLaP23rKcQoWRDHekMj5DGZPjTisVYWYqY+vB5/g3qZPuFcIMYFJn4wnrr50EDujtwlwFVlpjreBL/P9lbkdRyfMKBcmn7gRfAbeAO8G/wS7yT3Ab+AHYBF4I7ptmuJbUfzN4vDXeCN4U2X4AvNE65gtwOG80rYc6ndcdFnD+DnAe+ChCdme+wpzJyjmKLgr1VWTsOAph11A14LoURBkKrgBPTWGu98CLIE5rPktJC73NliiG5vxOgUK3WN3GlEQRnAG+Zjo7+oQKMxCsU8YXOI7XnHAd5wnFQeAb4GBl37fgXeDp4CGS09Jiy+hPxMoud0RNSSduDV1Kt4DzrbEfecHdyvHyBKSLN8galxu4L1CYp5lxRyGO9WbwcbDT00/OtYVg2VKFJdWWxGIyjtxliUMUw/HFjhwoJBqOVMoLuca54COeonT7xDmMUHbtV5d0KU0Ej7TG/gEXxpy3kMdFIfPUBghzneLMJUS/HTCXiPOYMl6bVBgtc30T/C7mPNm/KgUnvA94iTX2Cy0lFO87rNJbmCpwiqdz9XXCUzivLyqZK21g4tadSObTU96q5FSHJxFmBj18FD8wOvhgJY/fowviKDhz9XXuBccy4kg/eWkKofo3a/tAX2HkBzQo44sSODs57illvEER3Ac7mdxtTEGY/UNrpXOi5hXzQ3NBE1LmnbyXasSTafHlocJoTvJVFmRJsI3n7a12xCD6tfnM0j8CJ4UWkUeA3yjinQ2+FXBzkxS/JKH8KI/o5oP+4LHgMWA177+a20O8ZymvKDMxa9yViK1Kue0xkwlXyLmy1M/jw6pO08RcFiPp/PeOmiRt5CorcvWEbgePDrzmbpYld7gsxiXMpeALRXSGl4Evei6XpWw0JcEf7CN9Bn4Ivs4H0pVUmDXghCIK0+xxvT70UeMd+yXx+5RhfDOrbXH68u5rV47SwFsYcWBfFrDJVKP0arRmlw2tKyj4GnwYfJY5TtKaSRUm4wihtigi1LspWcc6zme3AnKFbnGs1yo/ai4bV00BogyM8+xRVBi9ab3ApNer7XI0t7Qmezemm+zm9f3gbQmddhQnJBFGKtiDrTFZa8tS9inLlAJQrnux4/gJSu10T573MD6JMFqmuyKH8wrFLkfUc7Ujhlvbn1Cc4DTF6O/GVGFGgOMczaZCQFtO4xQTzzBM21acD+rjcqBMzNNqYQ+kEJB5P/eon6RssD8jGWb0z9t8cBj4oE9aLZDPNaZ5PtU0oTWxtM9LWqxtyZTPD7ievO9abbIb9JHeQUcmKsxUxVxlDS8vsDDLFV/R32R/2LhSOfdJ4/8VhfRdZoEfmz3fomoRbXBUGG0ZPWMK/yVUGxOzuOW0mGm9nYes531eQCvqXl7lrNrr2QuSNmajZYm/gjco1x7RnfkOdZT9o1lbFBqjGWW0pC56X9czw42DtCv7xvig7VyKP5vsL9gfQvY7Syymw2S/4thUJFEM65tNisO1I4+8EZjnkWj2ixFFLHQUH4b0ordY+6+En+knwvzElDoaCmeb4mK2JUQT78vGHPZeWhLOL3M/D55k/ntptyOy724l0WyMFpE1jO3NrEyLDVk6E1lIrvU4fgxFGkv/UsWSQnxHK5dhC/3QGqe/dHy1+a8AAwCKR08FSRIHxQAAAABJRU5ErkJggg==);
+				background-size: contain;
+			}
+			.current .icon-ft {/*字体图标点击后的icon样式；*/
+				top: 2px;
+				left: 0px;
+				width: 22px;
+				height: 15px;
+				background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAAA0CAYAAAAg5t6HAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkNFN0E3M0I4Mjc4NDExRTU5RkYxQjg1Rjk2QkEyNzBEIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkNFN0E3M0I5Mjc4NDExRTU5RkYxQjg1Rjk2QkEyNzBEIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6Q0U3QTczQjYyNzg0MTFFNTlGRjFCODVGOTZCQTI3MEQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6Q0U3QTczQjcyNzg0MTFFNTlGRjFCODVGOTZCQTI3MEQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7nhaYNAAANmElEQVR42uxbC1RV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);
+				background-size: contain;
+			}
+			.icon-day {/*白天图标样式*/
+				width: 19px;
+				height: 18px;
+				background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADkAAAA5CAYAAACMGIOFAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkNFN0E3M0I0Mjc4NDExRTU5RkYxQjg1Rjk2QkEyNzBEIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkNFN0E3M0I1Mjc4NDExRTU5RkYxQjg1Rjk2QkEyNzBEIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6Q0U3QTczQjIyNzg0MTFFNTlGRjFCODVGOTZCQTI3MEQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6Q0U3QTczQjMyNzg0MTFFNTlGRjFCODVGOTZCQTI3MEQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6o6V5PAAADu0lEQVR42uyaTUgVURTHm/cigiS1LEitoHoqbgtcZAStngtDoYxa9rFsYYuWfUBhuSjCneiylkH2oavoEZlC4aYsM9toakWLnpsWyfQfOMJrOvdjZs6bedQc+OF7d9499/y9M/fj3HFc110Xo3WAYfp8BozG0agTs8hFsIM+L4H6f1GkvzEnjkYz6/4DS0WmIlORSlsq+bxcKSI3gkHwBlwSGA3PkrjPNE+GnhXAZYprkOLUjOmYQjT0un/aMHAMdcqNQ3GUWq+ujqknt/i+nwZDcc1vih4cojh0cQbqyQaw4P5tSfQo14OezYNGXV0b5zly5Le+mEX2KQTmTHVtl3U58BQ0lpQtgJ2Gei2gE7SDVrANVIMf4Bt4B56Dh+C9wdc80/4RMGteTNr/J/09+lhzW3WBCTeYTVA91WPwKGgPBrldS9kFBkA/qGOuN4FnbjTz6jczvuuoXa/93UHilnxmjoMVV8ZWyJ9IbFICz4FVV9ZWyW9FiDwGfmmCnQIXQBuoBxvobxuVT2nqen57khbpPYNFRYBzoNtiPnXod3MKP0VqJxGRjmaQGQXVAf1VUz3VYOQkIbJLEdADkA3pM0v1OetKQuQ4E8gHUBXxEfDqzzC+x+MW2aL4b+eFRuu8wn9LGH9hN82dTNlrMCa02xgjf347GmdmoJ0puyu8rbrHlB2MU2QrUzYuLLJg2a6VyA7KbLsMi3Tdb9sVuwRJ+2TZrjF+b+4pTd2rkk/1hky4Z+vBapkz7lzW3Ri/ze3KpTqKTNlmYYG1TNlKmJRJpiSDxpkqq/aVKdsrLHIPU/ZFkwFUxu/dYk8M3c3ZNNjnKzsEXgmKPKxo12/G+MOOri+YslPCPXnSst2yTSEjTNkBkBcSmCd/Nu1aDF/hl15cDmdGYO26SXrtGuUs5AZT1kQrn2xIn1la6TQx1/rDT0TR9pMFxUL6fogeraJ6nBWS2k+uZQZUyauPtOO38dNNv1cltZqTzvH0WOZ49oMaqlND321yPCfSbF2ad5UXufaMFiIKLER9BqOK9Ea4m2CZEk61mrOQyYDiJjUpzFpqb5nad8olkjsfvG6RC7oIRsBsSY62SN9H6Lopd3MtyvmorcCM4gD0dkxnk7eiHARHEWg84RWkUXPinZEQeSXsCa8wOYXQqxIi31aAQN3R/rTEAv1lqCNs3taSTqoEmclmqf2FIFlCm3cGvBeBzoOt4I7vraqgJvW+awPF9B0MgJ9RRZYz+5a+75qKTEWmIstuFfm+q7RJve8ayH4LMACaxEJEaXs23AAAAABJRU5ErkJggg==);
+				background-size: contain;
+			}
+
+			.icon-night {/*夜晚图标DIV样式；*/
+				left: 4px;
+				width: 16px;
+				height: 16px;
+				background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkU2OUYzRUEwMjc4NzExRTU5RkYxQjg1Rjk2QkEyNzBEIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjhBMzA2RjA2Mjc4QTExRTU5RkYxQjg1Rjk2QkEyNzBEIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6RTY5RjNFOUUyNzg3MTFFNTlGRjFCODVGOTZCQTI3MEQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6RTY5RjNFOUYyNzg3MTFFNTlGRjFCODVGOTZCQTI3MEQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4v5YACAAAC/UlEQVR42tSaXYhNURTH97kzRnJ9ZTQzPh7IMEr5yshHEwkRkSeSjweEiMjDePTkhcKLPCApUV54GxTKcDM0JfL9QE0UGdcdEmb7L3edOq5zzz1nn332Pvdfv5e5Z9Zd666711577etIKYUGjQILwRwwDOwDfcKAamP873CwBawDrcABP8ACU87/FWUgIk3gKMjL/7VfwV4sojxcCw6AL9JfD0DGdABhv0KTwAUwO+CZvaBfGFaYAJaDyyAb8Mwt0CksKFPh9W3gWgXnSSeFJTkBZXQrOM3VJUi9oJErUGoysBKcCuE86YYt58sF0MILtiakjTvCojI+i/o876Zh9ThNARysUCr99NpmAN5FTAvxBRgS0QZlK5+GDLQrOC9sOu/NADVm70LU+9RmYJOi8yLigk8sgPUxbEy0HUATH0RUNdV2AG0hd9xyarMdwNyYNhaDOpsBTI5pYwRYYTMAHYtwh80ARmqws1ShBdEWwGAdGyI4HrMYKAegawFSMdhlo5XIK/ZAfvoO5oFukxn4oNHeID5DjzUZwCvNNsn5DjDOVADPErA7BdwF0xP2v4YCyCVknDJwjxe2k8AHT4O0VTSeawD9Mll1glZN48T5IMc+N7p/7JJm1AFWg4ERna4Da8F1j62cdzZKY5RZBtbcEuYzuAlugyfgOSjwyS7LJ8QJYJoojuuX+RycLnqPlPXgLZfBalCB11iveyL7CM6K6tEZURxp/jNWGc2pzFbBp98M3peOVXrA4Sr49I+4zpdmgDSA94UZKXX+ITeNP8sFIDg9XWBoypyni0O6THzqN1bx6iXYCH6nyHnyZXOp8+UCIF0Fe1LiPH1FdoMr/q8G74DbwS9pT/TeO+Nes64JuFpNUl+5fdByT9wMHhl0vhu06L7opobqEPiWoON9oJ0v1bXf1LuMAcdAQbPjJ6g9juqPE+PXKvVcbjeAmQqHFsmb5iVwzu1tVKYSOkpdA1jEU246To4XxZ/gZLlUU5v8CbzhI+x9bqV74r7xHwEGAPDRVwnecW5KAAAAAElFTkSuQmCC);
+				background-size: contain;
+			}
+			.icon-text {/*下边栏图标文字DIV样式；*/
+				position: absolute;
+				top: 25px;
+				font-size: 10px;
+			}
+			.nav-pannel-bk{/*操作面板背景样式设置;*/
+				position: fixed;/*相对于body定位*/
+				bottom: 70px;/*在下边栏的上方。*/
+				width: 100%;
+				height: 135px;
+				background: #000;
+				opacity: 0.9;/*透明度。*/
+				z-index: 10000;/*显示顺序，比按钮字体要小。*/
+			}
+			.nav-pannel{/*操作面板主体结构容器样式，注意：位置定位与背景容器定位一致；*/
+				position: fixed;
+				bottom:70px;
+				width:100%;
+				height: 135px;
+				background:none;/*背景颜色*/
+				color:#fff;/*字体颜色*/
+				z-index:10001;/*显示顺序在背景容器上,数值要大。*/
+			}
+			.child-mod{/*字号容器与颜色容器的定位；*/
+				position: 5px 10px;
+				margin: 15px;
+			}
+			.child-mod span{/*span元素样式*/
+				display: inline-block;/*将元素在一行内显示；*/
+				padding-right: 20px;
+				padding-left: 10px;
+			}
+			.font-size-button{/*按钮样式设置；*/
+				background: none;
+				border:1px solid #8c8c8c;
+				border-radius: 16px;
+				color:#fff;/*按钮字体颜色，若不设置字体可能显示不出来；*/
+				padding: 5px 40px;
+			}
+			.child-mod button:nth-child(2){
+				margin-right:10px;
+			}
+			.bk-container{/*里面的圈*/
+				position: relative;/*相对定位相对于元素原来位置偏移了多少。*/
+				width: 30px;
+				height: 30px;
+				border-radius: 15px;
+				display: inline-block;
+				vertical-align: -10px;/*对齐。*/
+			}
+			.bk-container-current{/*外面的圈；*/
+				position: absolute;/*绝对定位相对于父元素定位*/
+				top:-2px;
+				left:-2px;
+				height: 32px;
+				width: 32px;
+				border-radius:16px;
+				border:1px #ff7800 solid;
+				display: inline-block;
+			}
+			/*下面是圈的颜色及，圈之间的右外边距；*/
+			.white{
+				background: #f7eee5;
+				margin-right:10px;
+			}
+			.gray{
+				background:#a4a4a4;
+				margin-right:10px;
+			}
+			.eyeshield{
+				background-color: #cdefce;
+				margin-right:10px;
+			}
+			.blue{
+				background-color: #283548;
+				margin-right:10px;
+			}
+			.night{
+				background-color: #0f1410;
+				margin-right:10px;
+			}
+
+			.artical-action-mid{/*中间区域操作模块样式*/
+				position: fixed;
+				width: 100%;
+				height: 40%;
+				top: 30%;
+				z-index: 10002;
+			}
+			.current{/*点击文字div时触发事件，将文字的样式修改到当前current的样式。*/
+				position: absolute;
+				top: 25px;
+				font-size: 10px;
+				color:#FFAA33;
+			}
+
+
+
+
+		</style>
+	</head>
+	<body>
+		<!--根div-->
+		<div class="container" id= "root">
+			<!--上边栏，隐藏状态-->
+			<div id = "top_nav" class="top-nav" style="display:none">
+				<div class="icon-back"></div>
+				<div class="nav-title">返回书架</div>
+			</div>
+			<!--标题-->
+			<div id="fiction_chapter_title"><div>
+
+			<!--中间内容-->
+			<div id= "fiction_container" class= "m-read-content">
+				<h4>正文 第五章 举鼎</h4>
+				<!--p标签里面是小说内容-->
+				<p>
+					时间总在不知不觉中流逝，一晃已经过去了两年，小不点已经三岁半了，有了自己的名字——石昊。
+
+          一岁多时他只能跟在大孩子屁股后面跑，现在三岁半了，体质强大的惊人，经常与一群大孩子并头四处乱闯。
+
+          此时，石村一块空地周围站满了人，被围了个水泄不通，村中的男女老少正在观看少年们演武。
+
+          一群孩子肌肉结实，**着上半身，汗水四溅，正在捉对比拼，有些人竟能将百余斤重的铜锤挥动起来，呼呼生风。
+
+          他们从六七岁到十二三岁不等，各个都跟山林中的小凶兽似的，力大无穷，身体jīng壮与结实的惊人。
+	      </p>
+        <p>
+		      “快看，那是我家的娃，才六岁而已，能将一百多斤的青石当成盾牌使用，有几个人比的了？将来肯定是大荒中一条了不得的好汉！”
+
+          “我家的娃才厉害，你们看，那张成年人才能拉开的犀筋大弓都被他拉满了，以后肯定能一箭shè杀强大的凶犼，击毙成年的貔貅。”
+
+          村人虽然很朴实，但凑到一起后却也喜欢夸赞自己的孩子厉害，相互比较后，一些壮汉将蒲扇大手握成拳头，不断挥动，眉飞sè舞。
+
+          村中的女人们也都笑的合不拢嘴，这群孩子真的很出sè，各个都龙jīng虎猛，有着用不完的力气，将来的石村肯定会因他们而变得强大。
+
+          “哞……”
+
+          一声莽牛吼，震动了村子。
+	      </P>
+        <p>
+          “快看，二猛才八岁半啊，居然将一头莽牛给生生掀翻了，了不得啊！”
+
+          场中一头青黑sè的大莽牛，通体黑亮的跟绸缎子似的，发出闷雷般的吼声，可刚一发狂，就被一个不算多高的孩子硬是给撂倒了，这引发了一番惊叹。
+
+          “总算没有白费心血，几位族老每隔一段rì子就给他们以凶兽真血、补骨宝药等熬炼身体，起了大作用。”
+
+          “孩子们都很强，将来说不定真的能走出去几个人雄，杀的山脉深处那些强大的洪荒物种落荒而逃。”
+
+          “咚”的一声大响，远处一个很干瘦的孩子将一个石磨盘掷出，飞出去足有十几米远。
+
+          “哎呦嘿，皮猴仈jiǔ岁了吧，看着干巴巴，居然这么大的力气，真是人不可貌相啊。”
+
+          “那是，也不看是谁的种，我给他起名叫石中侯，以后是要走出大山的，到负有盛名而繁盛的大部族去封侯做王。”
+
+          成年男子们互相吹嘘，都觉得自己的孩子了不得。
+
+          “轰隆！”
+	      </p>
+	      <p>
+          地面剧震，烟尘扬起，所有人的目光都被吸引了过去，众人讶然，有人要举鼎！
+
+          空地zhongyāng处有一个青铜鼎，足有上千斤重，上面有飞禽走兽的图案，古意盎然。鼎壁很厚，有一种沉重的大气感，鼎腿由于常被人抓举，很光滑，磨的像是镜面般，上      烙朱雀形图。
+
+          “小石蛟不行啊，刚才差点闪了腰，只将鼎掀离了地面而已，你年龄还太小，四年内都举不起来呢。”有大人打趣道。
+
+          千斤重的铜鼎不能随便乱来，不然会伤到己身，一般的孩子不可能举起，平时不允许接近，毕竟太沉重了。
+
+          “我来试试！”
+
+          一个很强壮的孩子上前，能有十二三岁的样子，两只手用力抓住一只鼎耳与一只鼎腿，猛的发力，大鼎被撼动，离开了地面，可紧接着又轰的一声落了回去，激起一片土尘。
+
+          显然失败了，还好孩子并没有被伤到。
+
+          “我也来！”
+	      </p>
+				<p>
+          地面剧震，烟尘扬起，所有人的目光都被吸引了过去，众人讶然，有人要举鼎！
+
+          空地zhongyāng处有一个青铜鼎，足有上千斤重，上面有飞禽走兽的图案，古意盎然。鼎壁很厚，有一种沉重的大气感，鼎腿由于常被人抓举，很光滑，磨的像是镜面般，上      烙朱雀形图。
+
+          “小石蛟不行啊，刚才差点闪了腰，只将鼎掀离了地面而已，你年龄还太小，四年内都举不起来呢。”有大人打趣道。
+
+          千斤重的铜鼎不能随便乱来，不然会伤到己身，一般的孩子不可能举起，平时不允许接近，毕竟太沉重了。
+
+          “我来试试！”
+
+          一个很强壮的孩子上前，能有十二三岁的样子，两只手用力抓住一只鼎耳与一只鼎腿，猛的发力，大鼎被撼动，离开了地面，可紧接着又轰的一声落了回去，激起一片土尘。
+
+          显然失败了，还好孩子并没有被伤到。
+
+          “我也来！”
+	      </p>
+			</div>
+
+			<!--下边栏-->
+			<div class="m-button-bar">
+				<!--利用 ul及li设置上一章和下一章按钮-->
+				<ul class= "u-tab">
+					<li id= "prev_button">上一章</li>
+					<li id= "next_button">下一章</li>
+				</ul>
+			</div>
+			<!--下边栏，隐藏状态-->
+			<div class="bottom-nav-bk bottom_nav" style="display:none"></div><!--下边栏背景；-->
+
+			<div class="bottom-nav bottom_nav" style="display:none"><!--整个下边栏内容div-->
+				<div class="item menu-button" id="menu_button"><!--每一项的div 如：目录图标及目录文字；-->
+					<div class="item-warp"><!--设置具体项的div-->
+						<div class="icon-menu"></div><!--设置图标的div-->
+						<div class="icon-text"><!--设置文字的div-->
+							目录
+						</div>
+					</div>
+				</div>
+				<div class="item" id="font-button"><!--每一项的div 如：文字图标及文字；-->
+					<div class="item-warp">
+						<div class="icon-ft"></div>
+						<div class="icon-text" id="icon_word">
+							字体
+						</div>
+ 					</div>
+				</div>
+				<div class="item" id="night-button"><!--每一项的div 如：白天与黑夜；-->
+					<div class="item-warp" style="display:none" id="day_icon"><!--设置具体项白天的div-->
+						<div class="icon-day"></div>
+						<div class="icon-text">
+							白天
+						</div>
+					</div>
+					<div class="item-warp" id="night_icon"><!--设置具体项黑夜的div-->
+						<div class="icon-night"></div>
+						<div class="icon-text">
+							夜间
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--仿native下边栏操作面板结构开发,字体大小，字体样式，背景颜色，白天黑夜替换。-->
+			<div class="nav-pannel-bk font_container" style="display:none"></div><!--操作面板背景-->
+			<!--操作面板主体内容容器。-->
+			<div class = "nav-pannel font_container" id="font-container" style="display: none">
+				<!--字号容器-->
+				<div class="child-mod">
+					<span>字号</span><!--组合行内元素，通过class 、id 选择器来格式化元素内容-->
+					<button id="large-font" class="font-size-button">大</button>
+					<button id="small-font" class="font-size-button">小</button>
+				</div>
+				<!--背景色容器-->
+				<div class= "child-mod">
+					<span>背景</span>
+					<div class="bk-container white"><!--背景圆圈-->
+						<div class="bk-container-current"></div>
+					</div>
+					<div class="bk-container gray"><!--背景圆圈-->
+						<div class="bk-container-current"></div>
+					</div>
+					<div class="bk-container eyeshield"><!--背景圆圈-->
+						<div class="bk-container-current"></div>
+					</div>
+					<div class="bk-container blue"><!--背景圆圈-->
+						<div class="bk-container-current"></div>
+					</div>
+					<div class="bk-container night"><!--背景圆圈-->
+						<div class="bk-container-current"></div>
+					</div>
+				</div>
+			</div>
+
+			<!--中间区域的操作模块；-->
+			<div class="m-artical-action">
+				<div class="artical-action-mid" id="action_mid"></div>
+			</div>
+
+		</div>
+
+		<script src="lib/zepto.min.js"></script><!--zepto 库更适合用移动端的框架，-->
+		<script>
+			window.jQuery = $;
+		</script>
+		<script src="js/jquery.base64.js"></script>
+		<script src="js/jquery.jsonp.js"></script><!--跨域请求-->
+
+		<script>
+		//搭建交互逻辑的结构
+		/*闭包。读取函数内部变量；可以将变量始终保存在内存中。闭包是定义在一个函数内部的函数，是连接函数内外的桥梁。*/
+		    (function(){'use script';
+		    	/*先申明一个内部类,localStorage 本地存储；*/
+		    	var Util = (function(){
+		    		/*如果传入了相同的key,则值会相应的覆盖。解决方法在key前面加一个前缀。*/
+		    		var prefix = 'html5_eader_';
+		    		/*获得数据,获取数据需要传入key;*/
+		    		var StorageGetter = function(key){
+		    			return localStorage.getItem(prefix+key);/*获取数据的方法，getItem(key);*/
+		    		};
+		    		/*存储数据,储存数据需要传入key,value;*/
+		    		var StorageSetter = function(key,value){
+		    			return localStorage.setItem(prefix+key,value);/*存入数据的方法，setItem(key,value);*/
+		    		};
+		    		/*将方法暴露出来*/
+		    		return{
+		    			StorageGetter:StorageGetter,
+		    			StorageSetter:StorageSetter
+		    		}
+
+		    	})();
+
+		    	//定义多个常量；
+		    	var Dom = {
+		    		//通过id取顶部导航;
+		    		top_nav:$('#top_nav'),		    		
+		    		//通过class取底部导航,因为底部导航div分为背景和内容两部分，所以用类选择器；
+		    		bottom_nav:$('.bottom_nav'),
+		    		font_container:$('.font_container'),
+		    		icon_word:$('#icon_word')
+
+		    	}
+		    	//定义变量；
+		    	var Win = $(window);
+		    	var Doc = $(document);
+
+		    	//整个项目的入口函数
+		    	function main(){
+		    		EventHander();//调用这个函数。
+		    	}
+		    	//实现与阅读器相关的数据交互方法，与服务器进行数据交互；
+		    	function ReaderMoel(){
+
+		    	}
+		    	//渲染基本的UI结构；
+		    	function ReaderBaseFrame(){
+
+		    	}
+
+		    	//控制层，交互的事件绑定;
+		    	//安卓4.0以上的版本支持click事件，用click事件的好处是可以再pc端打开HTML5页面，运用点击事件click。
+		    	//touch 事件一般用在移动端才有效果。
+		    	//对中间区域操作框添加click事件。
+		    	function EventHander(){
+		    		//点击时显示和隐藏上下边栏；
+		    		$('#action_mid').click(function(){
+		    			//如果display 为none,调用show(),反之调用hide();
+		    			if(Dom.top_nav.css("display")=="none"){
+		    				Dom.top_nav.show();
+		    				Dom.bottom_nav.show();
+		    				//点击中间区域时，字体的颜色也会改变到默认的颜色。
+		    				Dom.icon_word.removeClass('current');
+
+		    			}else{
+		    				Dom.top_nav.hide();
+		    				Dom.bottom_nav.hide();
+		    				Dom.font_container.hide();
+		    				//点击中间区域时，字体的颜色也会改变到默认的颜色。
+		    				Dom.icon_word.removeClass('current');
+		    			}
+		    		});
+
+		    		//滚动时上下边栏藏起来；
+		    		Win.scroll(function(){
+		    			Dom.top_nav.hide();
+		    			Dom.bottom_nav.hide();
+		    			Dom.font_container.hide();
+		    			//滚动时，字体的颜色也会改变到默认的颜色。
+		    			Dom.icon_word.removeClass('current');
+		    		});
+
+		    		//白天、夜晚切换事件。此事件可以可以触发背景切换事件。
+		    		$('#night-button').click(function(){
+
+		    		});
+
+		    		//字体放大按钮点击事件
+		    		$('#large-font').click(function(){
+
+		    		});
+
+		    		//字体缩小按钮点击事件
+		    		$('#small-font').click(function(){
+
+		    		});
+
+		    		/*
+		    		  唤起字体面板，对字体div添加点击事件；
+		    		  current 当前的，class=" current"意思就是说让当前某个标签的样式为current所定义的内容。
+		    		  在.css文件里或当前页的style样式里，定义一个.current的样式，如.current{...//样式内容}，这种属性一般会在鼠标划过的事件中用到。
+		    		*/
+		    		$('#font-button').click(function(){
+		    			if(Dom.font_container.css('display') =='none'){
+		    				Dom.font_container.show();
+		    				Dom.icon_word.addClass('current');
+		    			}else{
+		    				Dom.font_container.hide();
+		    				Dom.icon_word.removeClass('current');
+		    			}
+		    		});
+
+		    	}
+		    	
+		    	//入口函数的调用；
+		    	main();
+
+		    })();
+
+		</script>
+	</body>
+</html>
