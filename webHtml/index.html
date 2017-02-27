@@ -482,6 +482,22 @@
 		    	//定义变量；
 		    	var Win = $(window);
 		    	var Doc = $(document);
+		    	var body = $('body');
+		    	var white = $('.white');
+		    	var FictionContainer = $('#fiction_container');
+		    	var gray = $('.gray');
+		    	var eyeshield = $('.eyeshield');
+		    	var blue = $('.blue');
+		    	var night = $('.night');
+
+		    	//默认字体大小,先在本地储存中取值，如果没有的话就默认14；
+		    	var initFontSize = Util.StorageGetter('font_size');
+		    	initFontSize = parseInt(initFontSize);
+		    	if(!initFontSize){
+		    		initFontSize =14;
+		    	}
+		    	FictionContainer.css('font-size',initFontSize);
+
 
 		    	//整个项目的入口函数
 		    	function main(){
@@ -535,12 +551,47 @@
 
 		    		//字体放大按钮点击事件
 		    		$('#large-font').click(function(){
+		    			if(initFontSize > 20){
+		    				return;
+		    			}
+		    			initFontSize +=1;
+		    			//设置根div的font-size;
+		    			FictionContainer.css('font-size',initFontSize);
+		    			//将字号储存在localStorage 中；
+		    			Util.StorageSetter('font_size',initFontSize);
 
 		    		});
 
 		    		//字体缩小按钮点击事件
 		    		$('#small-font').click(function(){
+		    			if(initFontSize < 12){
+		    				return;
+		    			}
+		    			initFontSize -=1;
+		    			FictionContainer.css('font-size',initFontSize);
+		    			Util.StorageSetter('font_size',initFontSize);
+		    		});
 
+		    		//点击背景颜色按钮
+		    		white.click(function(){
+		    			body.css('background-color',white.css('background-color'));
+		    		});
+
+		    		gray.click(function(){
+		    			body.css('background-color',gray.css('background-color'));
+		    			
+		    		});
+
+		    		eyeshield.click(function(){
+		    			body.css('background-color',eyeshield.css('background-color'));
+		    		});
+
+		    		blue.click(function(){
+		    			body.css('background-color',blue.css('background-color'));
+		    		});
+
+		    		night.click(function(){
+						body.css('background-color',night.css('background-color'));   			
 		    		});
 
 		    		/*
