@@ -498,6 +498,14 @@
 		    	}
 		    	FictionContainer.css('font-size',initFontSize);
 
+		    	//默认背景颜色，先在本地存储中取值，如果没有的话就默认从body中取背景色。
+		    	//在localstorage 中取出key为background_color 的value 值；
+		    	var inintBackgroundcolor = Util.StorageGetter('background_color');
+		    	if(!inintBackgroundcolor){//如果本地储存取不到backgroundcolor，
+		    		inintBackgroundcolor = '#e9dfc7';
+		    	}
+  					body.css('background-color',inintBackgroundcolor);
+  					
 
 		    	//整个项目的入口函数
 		    	function main(){
@@ -545,8 +553,16 @@
 		    		});
 
 		    		//白天、夜晚切换事件。此事件可以可以触发背景切换事件。
-		    		$('#night-button').click(function(){
-
+		    		$('.icon-night').click(function(){
+		    		
+		    		});
+		    		$(".icon-day").click(function(){
+		    			if(body.css.background-color=="#0f1410"){
+		    				body.css('background-color',white.css('background-color'));
+		    			    inintBackgroundcolor = body.css('background-color');
+		    				Util.StorageSetter('background_color',inintBackgroundcolor);
+		    			}
+		    			
 		    		});
 
 		    		//字体放大按钮点击事件
@@ -575,24 +591,34 @@
 		    		//点击背景颜色按钮
 		    		white.click(function(){
 		    			body.css('background-color',white.css('background-color'));
+		    			inintBackgroundcolor = body.css('background-color');
+		    			Util.StorageSetter('background_color',inintBackgroundcolor);
 		    		});
 
 		    		gray.click(function(){
 		    			body.css('background-color',gray.css('background-color'));
-		    			
+		    			inintBackgroundcolor = body.css('background-color');
+		    			Util.StorageSetter('background_color',inintBackgroundcolor);
 		    		});
 
 		    		eyeshield.click(function(){
 		    			body.css('background-color',eyeshield.css('background-color'));
+		    			inintBackgroundcolor = body.css('background-color');
+		    			Util.StorageSetter('background_color',inintBackgroundcolor);
 		    		});
 
 		    		blue.click(function(){
 		    			body.css('background-color',blue.css('background-color'));
+		    			inintBackgroundcolor = body.css('background-color');
+		    			Util.StorageSetter('background_color',inintBackgroundcolor);
 		    		});
 
 		    		night.click(function(){
-						body.css('background-color',night.css('background-color'));   			
+						body.css('background-color',night.css('background-color'));
+						inintBackgroundcolor = body.css('background-color');
+						Util.StorageSetter('background_color',inintBackgroundcolor);   
 		    		});
+
 
 		    		/*
 		    		  唤起字体面板，对字体div添加点击事件；
