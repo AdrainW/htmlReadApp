@@ -20,7 +20,7 @@
 				background:#e9dfc7;/*背景色*/
 			}
 			.m-read-content{/*中间内容DIV样式；*/
-        		font-size:14px;/*字体大小*/
+        font-size:14px;/*字体大小*/
 				color:#555;/*字体颜色*/
 				line-height: 31px;/*字体行高*/
 				padding:15px;/* padding 简写在一个声明中设置所有内边距。4个内边距是15px*/
@@ -29,18 +29,18 @@
 				font-size: 20px;
 				color:#736357;
 				border-bottom: solid 1px #736357; /* 边框底部1px宽 实心边框 颜色为 #736357*/
-				letter-spacing: 2px;/*字间距*/
+				letter-spacing: 2px;/*字符间距*/
 				margin: 0 0 1em 0;/*h4元素的底部外边距；h4元素与p元素之间设置一个外边距*/
 			}
 			.m-read-content p{/*p元素的样式；*/
 				text-indent: 2em;/*将段落的第一行缩进2em*/
 				margin: 0.5em 0;/*上下外边距是0.5em,左右外边距是0;段落与段落之间设置一个外边距*/
-				letter-spacing: 0px;
-				line-height: 24px;
+				letter-spacing: 0px;/*字符间距,注意不是单词间距，默认normal，相当于0*/
+				line-height: 24px;/*字体行高*/
 			}
 			.u-tab{/*ul元素样式*/
 				height:34px;
-				margin: 10px auto;
+				margin: 10px auto;/*上下外边距10px,左右居中*/
 				line-height: 34px;/*line-height 与 height 设置为一个高度是要让文字能垂直居中*/
 				border-radius: 8px;/*CSS3属性，手机完美支持，边框设置圆角*/
 				border:1px solid #858382;
@@ -49,7 +49,7 @@
 				opacity: 0.9;/* opacity 属性设置元素的不透明级别 */
 			}
 			.u-tab li{/*ul元素下li元素的样式*/
-        		display: inline-block;/* li转换为行内区块元素,li可以在一行内呈现。 */
+        display: inline-block;/* li转换为行内区块元素,li可以在一行内呈现。 */
 				width:49%;/* 不能设置50%，因为有border宽度，若设置50%就不能排列到一行。*/
 				border-right: 1px solid #858382;/*两个按钮间有根边框线。*/
 				text-align: center;/* 元素内部居中。*/
@@ -57,7 +57,7 @@
 			}
 			/*设置border-right后 第二个按钮也会出现一个细线，这个细线需要去掉，此时用到 伪类选择器;CSS的元素从1开始*/
 			.u-tab li:nth-child(2){/*ul元素下第2个li元素的样式*/
-       			 border-right:none;
+       		border-right:none;
 			}
 			.m-button-bar {/*下边栏DIV样式；*/
 				width:70%;
@@ -266,9 +266,9 @@
 	<body>
 		<!--根div-->
 		<div class="container" id= "root">
-			<!--上边栏，隐藏状态-->
+			<!--上边栏，隐藏状态,style="display:none" 表示隐藏。-->
 			<div id = "top_nav" class="top-nav" style="display:none">
-				<div class="icon-back"></div>
+				<div class="icon-back"></div><!--图片容器，通过设置css的background:url(img)-->
 				<div class="nav-title">返回书架</div>
 			</div>
 			<!--标题-->
@@ -457,27 +457,42 @@
 		    		var StorageGetter = function(key){
 		    			return localStorage.getItem(prefix+key);/*获取数据的方法，getItem(key);*/
 		    		};
+
 		    		/*存储数据,储存数据需要传入key,value;*/
 		    		var StorageSetter = function(key,value){
 		    			return localStorage.setItem(prefix+key,value);/*存入数据的方法，setItem(key,value);*/
 		    		};
+
+						//封装获取数据的过程，jsonp跨域请求
+						var getBSONP = function(url,callback){
+							return $.jsonp({
+								url:url,
+								cache:true,//是否缓存；
+								callback:'duokan_fiction_chapter',//jsonp请求的数据，duokan_fiction_chapter('base64加密后的数据')
+								success:function(result){//数据请求成功后的回调函数。
+									var data = $.base64.decode(result);//解码base64格式的数据，或得json 格式数据。
+									var json = decodeURIComponent(escape(data));//进行解码
+									callback(json);
+								}
+							});
+						}
+
 		    		/*将方法暴露出来*/
 		    		return{
+							getBSONP:getBSONP,
 		    			StorageGetter:StorageGetter,
 		    			StorageSetter:StorageSetter
 		    		}
-
 		    	})();
 
 		    	//定义多个常量；
 		    	var Dom = {
 		    		//通过id取顶部导航;
-		    		top_nav:$('#top_nav'),		    		
+		    		top_nav:$('#top_nav'),
 		    		//通过class取底部导航,因为底部导航div分为背景和内容两部分，所以用类选择器；
 		    		bottom_nav:$('.bottom_nav'),
 		    		font_container:$('.font_container'),
 		    		icon_word:$('#icon_word')
-
 		    	}
 		    	//定义变量；
 		    	var Win = $(window);
@@ -505,16 +520,58 @@
 		    		inintBackgroundcolor = '#e9dfc7';
 		    	}
   					body.css('background-color',inintBackgroundcolor);
-  					
+
 
 		    	//整个项目的入口函数
 		    	function main(){
+						var readerModel = ReaderModel();
+						readerModel.init();
 		    		EventHander();//调用这个函数。
 		    	}
-		    	//实现与阅读器相关的数据交互方法，与服务器进行数据交互；
-		    	function ReaderMoel(){
 
-		    	}
+
+		    	//实现与阅读器相关的数据交互方法，与服务器进行数据交互；
+							function ReaderModel(){
+								var Chapter_id;//章节id
+								//初始化一个函数
+								var init = function(){
+									getFictionInfo(function(){
+										getCurChapterContent(Chapter_id,function(){
+											//
+										})
+									})
+								}
+								// $.get() 方法使用 HTTP GET 请求从服务器加载数据。
+								//1、先获取章节列表信息,先取出id；
+								var getFictionInfo = function(callback){
+									$.get('data/chapter.json',function(data){
+										//获取章节信息后的回调函数；
+										Chapter_id = data.chapters[1].chapter_id;//拿到第1章数据的id;
+										callback && callback();
+									},'json');
+								}
+								//2、根据id获取章节内容;
+								//'data/data'+chapter_id+'.json'  拼接章节id得到 data1.json、data2.json ......
+								var getCurChapterContent = function(chapter_id,callback){
+									$.get('data/data'+ chapter_id + '.json',function(data){
+										if(data.result == 0){//判断服务器状态，服务器ok；chapter.json 提前约定好 "result": 0；
+											var url = data.jsonp;//取到URL地址；真实的章节数据地址，jsonp跨域请求；
+											Util.getBSONP(url,function(data){//调用封装好的获取数据的方法；
+												//断点调试。
+												//debugger;
+												callback && callback(data);
+												//jquery中的回调函数callback();
+												//callback && callback(data)是if(callback){callback()}的缩写，目的是代码健壮性的提升，防治不声明callback就运行导致的报错
+											});
+										}
+									},'json');
+								}
+								return{
+									init:init
+								}
+
+							}
+
 		    	//渲染基本的UI结构；
 		    	function ReaderBaseFrame(){
 
@@ -554,7 +611,7 @@
 
 		    		//白天、夜晚切换事件。此事件可以可以触发背景切换事件。
 		    		$('.icon-night').click(function(){
-		    		
+
 		    		});
 		    		$(".icon-day").click(function(){
 		    			if(body.css.background-color=="#0f1410"){
@@ -562,7 +619,7 @@
 		    			    inintBackgroundcolor = body.css('background-color');
 		    				Util.StorageSetter('background_color',inintBackgroundcolor);
 		    			}
-		    			
+
 		    		});
 
 		    		//字体放大按钮点击事件
@@ -616,7 +673,7 @@
 		    		night.click(function(){
 						body.css('background-color',night.css('background-color'));
 						inintBackgroundcolor = body.css('background-color');
-						Util.StorageSetter('background_color',inintBackgroundcolor);   
+						Util.StorageSetter('background_color',inintBackgroundcolor);
 		    		});
 
 
@@ -636,7 +693,7 @@
 		    		});
 
 		    	}
-		    	
+
 		    	//入口函数的调用；
 		    	main();
 
