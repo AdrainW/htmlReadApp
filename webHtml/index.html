@@ -9,7 +9,7 @@
 		<link rel="stylesheet" href="css/reset.css"><!--重置默认布局-->
 		<style type="text/css">
 		  html{
-				width:100%;
+				width:100%;l
 				height:100%;
 				overflow-x: hidden;/* overflow-x 对元素左右边缘进行裁剪不进行滚动 */
 			}
@@ -525,7 +525,10 @@
 		    	//整个项目的入口函数
 		    	function main(){
 						var readerModel = ReaderModel();
-						readerModel.init();
+						var readerUI = ReaderBaseFrame(FictionContainer);//$('#fiction_container');
+						readerModel.init(function(data){
+							readerUI(data);
+						});
 		    		EventHander();//调用这个函数。
 		    	}
 
@@ -534,10 +537,10 @@
 							function ReaderModel(){
 								var Chapter_id;//章节id
 								//初始化一个函数
-								var init = function(){
+								var init = function(UIcallback){
 									getFictionInfo(function(){
-										getCurChapterContent(Chapter_id,function(){
-											//
+										getCurChapterContent(Chapter_id,function(data){
+											UIcallback && UIcallback(data);
 										})
 									})
 								}
@@ -573,8 +576,21 @@
 							}
 
 		    	//渲染基本的UI结构；
-		    	function ReaderBaseFrame(){
-
+					//拿到字符窜数据后，需要JSON.parse(text)方法将一个JSON 字符串转换为对象。
+		    	function ReaderBaseFrame(container){//传进来容器container
+					  function parseChapterData(jsonData){//传入json格式数据
+						  var jsonObj = JSON.parse(jsonData);//拿到数据后将数据加入相应的标签；
+						     var html = "<h4>"+ jsonObj.t +"<h4>";//拼接html5结构-->标题。
+						     //遍历内容数组
+						     //遍历章节内容，将没一章内容一次添加到标题后。
+						     for(var i=0;i<jsonObj.p.length;i++){
+						         html += "<p>" + jsonObj.p[i] +"<p>"
+						      }
+						      return html;
+						}
+						return function(data){
+						  container.html(parseChapterData(data));
+						  }
 		    	}
 
 		    	//控制层，交互的事件绑定;
