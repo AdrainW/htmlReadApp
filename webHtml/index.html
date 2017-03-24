@@ -504,6 +504,8 @@
 		    	var eyeshield = $('.eyeshield');
 		    	var blue = $('.blue');
 		    	var night = $('.night');
+		    	var readerModel;
+		    	var readerUI;
 
 		    	//默认字体大小,先在本地储存中取值，如果没有的话就默认14；
 		    	var initFontSize = Util.StorageGetter('font_size');
@@ -524,8 +526,8 @@
 
 		    	//整个项目的入口函数
 		    	function main(){
-						var readerModel = ReaderModel();
-						var readerUI = ReaderBaseFrame(FictionContainer);//$('#fiction_container');
+						readerModel = ReaderModel();
+						readerUI = ReaderBaseFrame(FictionContainer);//$('#fiction_container');
 						readerModel.init(function(data){
 							readerUI(data);
 						});
@@ -536,6 +538,7 @@
 		    	//实现与阅读器相关的数据交互方法，与服务器进行数据交互；
 							function ReaderModel(){
 								var Chapter_id;//章节id
+								var ChapterTotal;//总章节数
 								//初始化一个函数
 								var init = function(UIcallback){
 									getFictionInfo(function(){
@@ -549,7 +552,12 @@
 								var getFictionInfo = function(callback){
 									$.get('data/chapter.json',function(data){
 										//获取章节信息后的回调函数；
-										Chapter_id = data.chapters[1].chapter_id;//拿到第1章数据的id;
+										//先查看本地储存中有没有Chapter_id,
+										Chapter_id = Util.StorageGetter("last_chapter_id");
+										if(Chapter_id==null){
+											Chapter_id = data.chapters[1].chapter_id;//拿到第1章数据的id;
+										}
+										ChapterTotal = data.chapters.length;
 										callback && callback();
 									},'json');
 								}
@@ -569,8 +577,34 @@
 										}
 									},'json');
 								}
+								//翻上一页,接收章节id  chapter_id 作为参数。这里可以去掉参数，用全局变量 Chapter_id
+								var prevChapter = function(UIcallback ){//UIcallback 回调
+									Chapter_id = parseInt(Chapter_id,10);//parseInt()解析字符串并返回一个整数。
+									if(Chapter_id==0){
+										return;
+									}
+									Chapter_id-=1;
+									//var cid = Chapter_id-1;
+									getCurChapterContent(Chapter_id,UIcallback);//根据id获取章节内容
+									Util.StorageSetter('last_chapter_id',Chapter_id);//将章节id保存在本地。
+
+								}
+								//翻下一页,接收章节id  chapter_id 作为参数。
+								var nextChapter = function(UIcallback){
+									Chapter_id = parseInt(Chapter_id,10);//parseInt()解析字符串并返回一个整数。
+									if(Chapter_id==ChapterTotal){
+										return;
+									}
+									Chapter_id+=1;
+									//var cid = Chapter_id-1;
+									getCurChapterContent(Chapter_id,UIcallback);//根据id获取章节内容
+									Util.StorageSetter('last_chapter_id',Chapter_id);//将章节id保存到本地。
+								}
+								//将接口暴露出来
 								return{
-									init:init
+									init:init,
+									prevChapter:prevChapter,
+									nextChapter:nextChapter
 								}
 
 							}
@@ -706,6 +740,17 @@
 		    				Dom.font_container.hide();
 		    				Dom.icon_word.removeClass('current');
 		    			}
+		    		});
+		    		//绑定翻页事件；
+		    		$("#prev_button").click(function(){
+		    			readerModel.prevChapter(function(data){
+		    				readerUI(data);
+		    			});
+		    		});
+		    		$("#next_button").click(function(){
+		    			readerModel.nextChapter(function(data){
+		    				readerUI(data);
+		    			});
 		    		});
 
 		    	}
